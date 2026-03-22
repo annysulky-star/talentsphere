@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentSphere - Talent Showcase Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Auth Styles */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .auth-card h2 {
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .toggle-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .toggle-auth span {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+        
+        .profile-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .logout-btn {
+            padding: 8px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .creators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .creator-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .creator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .media-preview {
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .media-overlay {
+            background: rgba(0,0,0,0.3);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .creator-info {
+            padding: 20px;
+        }
+        
+        .creator-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .talent-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #667eea;
+            margin: 8px 0;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .bio {
+            color: #777;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .creators-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="authContainer" class="auth-container">
+    <div id="loginForm" class="auth-card">
+        <h2><i class="fas fa-star"></i> TalentSphere</h2>
+        <div class="input-group">
+            <input type="email" id="loginEmail" placeholder="Email">
+        </div>
+        <div class="input-group">
+            <input type="password" id="loginPassword" placeholder="Password">
+        </div>
+        <button class="btn" id="loginBtn">Login</button>
+        <div class="toggle-auth" id="showSignup">
+            New Creator? <span>Sign up</span>
+        </div>
+    </div>
+    <div id="signupForm" class="auth-card" style="display: none;">
+        <h2><i class="fas fa-user-plus"></i> Become a Creator</h2>
+        <div class="input-group">
+            <input type="text" id="signupName" placeholder="Full Name">
+        </div>
+        <div class="input-group">
+            <input type="email" id="signupEmail" placeholder="Email">
+        </div>
+        <div class="input-group">
+            <input type="password" id="signupPassword" placeholder="Password">
+        </div>
+        <div class="input-group">
+            <select id="signupTalent">
+                <option value="Dancer">🕺 Dancer</option>
+                <option value="Acrobatics">🤸 Acrobatics</option>
+                <option value="Artist">🎨 Artist</option>
+                <option value="Sports">⚽ Sports</option>
+                <option value="Musician">🎵 Musician</option>
+                <option value="Magician">🪄 Magician</option>
+                <option value="Comedian">😂 Comedian</option>
+            </select>
+        </div>
+        <button class="btn" id="signupBtn">Sign Up</button>
+        <div class="toggle-auth" id="showLogin">
+            Already have an account? <span>Login</span>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard" id="mainDashboard">
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-theater-masks"></i> TalentSphere
+            </div>
+            <div class="user-info">
+                <div class="profile-btn" id="profileBtn">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userName">Creator</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-talent="all">All Talents</button>
+            <button class="filter-btn" data-talent="Dancer">🕺 Dancers</button>
+            <button class="filter-btn" data-talent="Acrobatics">🤸 Acrobatics</button>
+            <button class="filter-btn" data-talent="Artist">🎨 Artists</button>
+            <button class="filter-btn" data-talent="Sports">⚽ Sports</button>
+            <button class="filter-btn" data-talent="Musician">🎵 Musicians</button>
+            <button class="filter-btn" data-talent="Magician">🪄 Magicians</button>
+            <button class="filter-btn" data-talent="Comedian">😂 Comedians</button>
+        </div>
+
+        <div id="creatorsGrid" class="creators-grid">
+            <div class="loading">Loading amazing creators...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let currentFilter = 'all';
+    
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.background = isError ? '#dc3545' : '#28a745';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    async function apiCall(endpoint, options = {}) {
+        const response = await fetch(endpoint, options);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Error');
+        return data;
+    }
+    
+    async function loadCreators() {
+        try {
+            const url = currentFilter === 'all' ? '/api/creators' : `/api/creators?talent=${currentFilter}`;
+            const creators = await apiCall(url);
+            const grid = document.getElementById('creatorsGrid');
+            
+            if (!creators || creators.length === 0) {
+                grid.innerHTML = '<div class="loading">No creators found</div>';
+                return;
+            }
+            
+            grid.innerHTML = creators.map(creator => `
+                <div class="creator-card" onclick="viewCreator('${creator.id}')">
+                    <div class="media-preview" style="background-image: url('${creator.profileMedia}')">
+                        <div class="media-overlay">
+                            <i class="fas fa-user-circle fa-4x" style="color: white; opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                    <div class="creator-info">
+                        <div class="creator-name">${creator.name}</div>
+                        <span class="talent-badge">${creator.talentType}</span>
+                        <div class="stats">
+                            <span><i class="fas fa-eye"></i> ${creator.latestPost?.views || 0}</span>
+                            <span><i class="fas fa-heart"></i> ${creator.latestPost?.likes?.length || 0}</span>
+                            <span><i class="fas fa-users"></i> ${creator.followers?.length || 0}</span>
+                            <span><i class="fas fa-image"></i> ${creator.postsCount || 0}</span>
+                        </div>
+                        <div class="bio">${creator.bio || '✨ New creator ready to showcase amazing talent!'}</div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            showToast('Failed to load creators', true);
+        }
+    }
+    
+    window.viewCreator = async function(creatorId) {
+        try {
+            const data = await apiCall(`/api/creators/${creatorId}`);
+            alert(`✨ ${data.creator.name}\n🎭 Talent: ${data.creator.talentType}\n📝 ${data.creator.bio}\n\n📸 Posts: ${data.posts.length}\n👥 Followers: ${data.creator.followers?.length || 0}\n\nClick on their profile to see more!`);
+        } catch (error) {
+            showToast('Error loading profile', true);
+        }
+    };
+    
+    async function login(email, password) {
+        try {
+            const data = await apiCall('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            currentUser = data.user;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showDashboard();
+            showToast('Welcome back! 🎉');
+        } catch (error) {
+            showToast(error.message, true);
+        }
+    }
+    
+    async function signup(name, email, password, talentType) {
+        try {
+            const data = await apiCall('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, talentType })
+            });
+            currentUser = data.user;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showDashboard();
+            showToast('Account created successfully! 🎉');
+        } catch (error) {
+            showToast(error.message, true);
+        }
+    }
+    
+    function logout() {
+        localStorage.removeItem('user');
+        currentUser = null;
+        showAuth();
+        showToast('Logged out successfully');
+    }
+    
+    function showDashboard() {
+        document.getElementById('authContainer').style.display = 'none';
+        document.getElementById('mainDashboard').style.display = 'block';
+        document.getElementById('userName').textContent = currentUser?.name || 'Creator';
+        loadCreators();
+    }
+    
+    function showAuth() {
+        document.getElementById('authContainer').style.display = 'flex';
+        document.getElementById('mainDashboard').style.display = 'none';
+    }
+    
+    // Event Listeners
+    document.getElementById('loginBtn').onclick = () => {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        if (email && password) login(email, password);
+        else showToast('Please fill all fields', true);
+    };
+    
+    document.getElementById('signupBtn').onclick = () => {
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const talent = document.getElementById('signupTalent').value;
+        if (name && email && password) signup(name, email, password, talent);
+        else showToast('Please fill all fields', true);
+    };
+    
+    document.getElementById('logoutBtn').onclick = logout;
+    document.getElementById('profileBtn').onclick = () => {
+        if (currentUser) {
+            alert(`👤 Your Profile\n\nName: ${currentUser.name}\n🎭 Talent: ${currentUser.talentType}\n📧 Email: ${currentUser.email}\n📝 ${currentUser.bio || 'Share your talent!'}\n\n👥 Followers: ${currentUser.followers || 0}\n\n✨ Keep creating amazing content!`);
+        }
+    };
+    
+    document.getElementById('showSignup').onclick = () => {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+    };
+    
+    document.getElementById('showLogin').onclick = () => {
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+    };
+    
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.talent;
+            loadCreators();
+        };
+    });
+    
+    // Check if logged in
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showDashboard();
+    } else {
+        showAuth();
+    }
+</script>
+</body>
+</html>
